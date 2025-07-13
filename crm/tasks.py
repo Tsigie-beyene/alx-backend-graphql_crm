@@ -14,17 +14,14 @@ def generate_crm_report():
         }
     """
     result = schema.execute(query)
-    if result.errors:
-        with open("/tmp/crm_report_log.txt", "a") as log_file:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_file.write(f"{timestamp} - Error executing query: {result.errors}\n")
-        return
-    
-    data = result.data["report"]
-    total_customers = data["totalCustomers"]
-    total_orders = data["totalOrders"]
-    total_revenue = data["totalRevenue"]
-    
-    with open("/tmp/crm_report_log.txt", "a") as log_file:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_file.write(f"{timestamp} - Report: {total_customers} customers, {total_orders} orders, {total_revenue} revenue\n")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    with open("/tmp/crmreportlog.txt", "a") as log_file:
+        if result.errors:
+            log_file.write(f"{timestamp} - Error: {result.errors}\n")
+        else:
+            data = result.data["report"]
+            log_file.write(
+                f"{timestamp} - Report: {data['totalCustomers']} customers, "
+                f"{data['totalOrders']} orders, {data['totalRevenue']} revenue\n"
+            )
